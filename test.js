@@ -362,7 +362,9 @@ describe('success tests', function () {
   });
   
   it('should not overwrite ctx.state.token on successful token verification if opts.tokenKey is undefined', done => {
-    const validUserResponse = res => res.body.token === "DONT_CLOBBER_ME" && "ctx.state.token not clobbered";
+    var validUserResponse = function (res) {
+      if (!(res.body.token === "DONT_CLOBBER_ME")) return "ctx.state.token not clobbered";
+    }
 
     const secret = 'shhhhhh';
     const token = koajwt.sign({foo: 'bar'}, secret);
