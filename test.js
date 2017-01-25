@@ -360,6 +360,31 @@ describe('success tests', function () {
         .expect(validUserResponse)
         .end(done);
   });
+  
+  it('should not overwrite ctx.state.token on successful token verification if opts.tokenKey is undefined', done => {
+    const validUserResponse = res => res.body.token === "DONT_CLOBBER_ME" && "ctx.state.token not clobbered";
+
+    const secret = 'shhhhhh';
+    const token = koajwt.sign({foo: 'bar'}, secret);
+
+    const app = koa();
+
+    app.use(function* (next) {
+      this.state = { token: 'DONT_CLOBBER_ME' };
+      yield next;
+    });
+    app.use(koajwt({ secret: secret, key: 'jwtdata' }));
+    app.use(function* (next) {
+      this.body = { token: this.state.token };
+    });
+
+    request(app.listen())
+      .get('/')
+      .set('Authorization', 'Bearer ' + token)
+      .expect(200)
+      .expect(validUserResponse)
+      .end(done);
+  });
 
 
   it('should provide the raw token to the state context', function (done) {
