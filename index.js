@@ -1,4 +1,3 @@
-var assert   = require('assert');
 var thunkify = require('thunkify');
 var _JWT     = require('jsonwebtoken');
 var unless   = require('koa-unless');
@@ -9,7 +8,6 @@ var JWT = {decode: _JWT.decode, sign: _JWT.sign, verify: thunkify(_JWT.verify)};
 module.exports = function(opts) {
   opts = opts || {};
   opts.key = opts.key || 'user';
-  opts.tokenKey = opts.tokenKey || 'token';
 
   var tokenResolvers = [resolveCookies, resolveAuthorizationHeader];
 
